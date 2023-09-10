@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Comment;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -62,7 +63,6 @@ class PostController extends Controller
     public function update($post_id) {
 
 
-
     }
 
     public function show(Request $request) {
@@ -75,10 +75,13 @@ class PostController extends Controller
 
         $post = Post::find($post_id);
 
-        return view('admin.pages.articles.show', [
+        $comments = Comment::all();
+
+        return view('posts.show', [
             'post' => $post,
             'categories' => $categories,
-            'posts' => $posts
+            'posts' => $posts,
+            'comments' => $comments
         ]);
     }
 }
