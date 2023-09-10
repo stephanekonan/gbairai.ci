@@ -12,7 +12,20 @@ class SiteController extends Controller
 {
     public function index() {
 
-        $posts = Post::with('category', 'user')->latest()->get();
+        $categorie = request()->input('categorie');
+
+        $posts = Post::with('category', 'user');
+
+        if($categorie) {
+
+            $posts->whereHas('category', function ($query) use ($categorie) {
+                $query->where('slug', $categorie);
+            });
+
+        }
+
+        $posts = $posts->latest()->get();
+
         $categories = Category::all();
 
         return view('welcome', [ 'posts' => $posts, 'categories' => $categories ]);

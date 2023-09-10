@@ -23,20 +23,21 @@ Route::get('/', [SiteController::class, 'index'])->name('acceuil');
 
 Route::get('/login', [AuthController::class, 'index'])->name('login.index');
 Route::post('/login', [AuthController::class, 'login'])->name('login.store');
+Route::post('/logininmodal', [AuthController::class, 'loginInModal'])->name('login.in.modal');
 
 Route::get('/register',[AuthController::class, 'registerView'] )->name('register.index');
 Route::post('/register', [AuthController::class, 'register'])->name('register.store');
 Route::post('/', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/post/{id}', [PostController::class, 'show'])->name('post.show');
+Route::get('/posts/{id}', [CommentController::class, 'show'])->name('comment.show');
 
 Route::group(['middleware' => 'auth'], function () {
 
-    Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::post('/posts/comment', [CommentController::class, 'store'])->name('post.comment');
     Route::post('/comments/reply', [CommentController::class, 'reply'])->name('comments.reply');
 
 });
-
 
 Route::group(['middleware' => 'admin'], function () {
 

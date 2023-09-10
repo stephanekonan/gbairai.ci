@@ -67,6 +67,7 @@
                         @endif
 
                     <div class="grid grid-cols-4 gap-5">
+                        
                                 @foreach ($posts as $post)
 
                                 <div class="w-56 h-72 my-3 flex flex-col bg-gray-100 justify-between rounded-lg shadow-md hover:shadow-xl">
