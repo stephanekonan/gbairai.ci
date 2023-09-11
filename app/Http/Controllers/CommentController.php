@@ -8,15 +8,6 @@ use RealRashid\SweetAlert\Facades\Alert;
 
 class CommentController extends Controller
 {
-
-    public function show() {
-
-        // $comments = Comment::all();
-
-        // return view('admin.pages.articles.show', compact('comments'));
-
-    }
-
     public function store(Request $request)
     {
         $request->validate([
@@ -24,8 +15,6 @@ class CommentController extends Controller
             'user_id' => 'required',
             'post_id' => 'required',
         ]);
-
-        // dd($request->all());
 
         Comment::create([
             'user_id' => $request->input('user_id'),
@@ -38,19 +27,23 @@ class CommentController extends Controller
         return redirect()->back();
     }
 
-    public function reply(Request $request)
+    public function reply(Request $request, Comment $comment)
     {
         $request->validate([
-            'content' => 'required',
+            'contentreply' => 'required',
+            'user_id' => 'required',
+            'post_id' => 'required',
         ]);
 
-        Comment::create([
-            'content' => $request->input('content'),
-            'user_id' => auth()->user()->id,
-            'post_id' => $request->input('post_id'),
-            'parent_comment_id' => $request->input('parent_comment_id'),
-        ]);
+        $commentReply = new Comment();
+        $commentReply->content = $request->input('contentreply');
+        $commentReply->user_id = $request->input('user_id');
+        $commentReply->post_id = $request->input('post_id');
 
-        return back();
+        $comment->replies()->save($commentReply);
+
+        Alert::toast('Commentaire ajouté', 'success')->position('top');
+
+        return redirect()->back();
     }
 }

@@ -44,14 +44,14 @@
                 <textarea id="comment" name="content" rows="3" class="w-full px-0 text-sm text-gray-900 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400" placeholder="Laissez un commentaire..." required></textarea>
             </div>
             <input type="hidden" name="post_id" value="{{ $post->id }}">
-            <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
             <div class="flex items-center justify-between px-3 py-2 border-t dark:border-gray-600">
 
+                @auth
+
+                <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
                 <button type="submit" class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-green-700 rounded-lg focus:ring-4 focus:ring-green-200 dark:focus:ring-green-900 hover:bg-green-800">
                     Poster votre commentaire
                 </button>
-                @auth
-
 
                     @else
 
@@ -65,26 +65,111 @@
         </div>
     </form>
 
-    </div>
-
-
 </div>
 
-@auth
-
-<div class="my-10">
+<div class="space-y-8 my-10">
 
 
-    @foreach ($comments as $comment )
+    @foreach ($post->comments as $comment )
+
+    <div class="flex bg-slate-50 p-6 rounded-lg">
+
+        <img src="{{ Gravatar::get($comment->user->email) }}" alt="{{ $comment->user->username }}" class="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded-full">
+
+        <div class="ml-4 flex flex-col">
+
+            <div class="flex justify-between">
+
+                <div class="flex flex-row sm:flex-col sm:items-start">
+
+                    <h2 class="font-bold text-slate-900 text-xl"> {{ $comment->user->username }} </h2>
+
+                    <span class="text-slate-400"> {{ $comment->created_at->diffForHumans() }}</span>
+
+                </div>
 
 
+
+            </div>
+
+            <p class="mt-1 font-medium text-slate-800 sm:leading-loose">{{ $comment->content }}</p>
+
+            <button class="flex my-3 space-x-2 items-center  show-comment-form">
+
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                </svg>
+                <span class="font-bold">
+                    Répondre
+                </span>
+
+            </button>
+
+            <form action="{{ route('comment.reply', $comment) }}" method="POST" class="hidden comment-form" id="commentForm">
+                @csrf
+                <div class="w-full mb-4 border-4 border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+                    <div class="px-4 py-4 bg-white rounded-t-lg dark:bg-gray-800">
+                        <label for="comment" class="sr-only">Votre commentaire</label>
+                        <textarea id="contentreply" name="contentreply" rows="3" class="w-full px-0 text-sm text-gray-900 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400" placeholder="Laissez un commentaire..." required></textarea>
+                    </div>
+                    <input type="hidden" name="post_id" value="{{ $post->id }}">
+                    <div class="flex items-center justify-between px-3 py-2 border-t dark:border-gray-600">
+        
+                        @auth
+        
+                        <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
+                        <button type="submit" class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-green-700 rounded-lg focus:ring-4 focus:ring-green-200 dark:focus:ring-green-900 hover:bg-green-800">
+                            Envoyer
+                        </button>
+        
+                            @else
+        
+                            <a data-modal-target="authentication-modal" data-modal-toggle="authentication-modal" class="inline-flex cursor-pointer items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-green-700 rounded-lg focus:ring-4 focus:ring-green-200 dark:focus:ring-green-900 hover:bg-green-800">
+                                Répondre à ce commentaire
+                            </a>
+        
+                        @endauth
+        
+                    </div>
+                </div>
+            </form>
+
+
+            @foreach ($comment->replies as $commentReply )
+
+            <div class="flex bg-slate-50 p-6 rounded-lg">
+        
+                <img src="{{ Gravatar::get($commentReply->user->email) }}" alt="{{ $commentReply->user->username }}" class="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded-full">
+        
+                <div class="ml-4 flex flex-col">
+        
+                    <div class="flex justify-between">
+        
+                        <div class="flex flex-row sm:flex-col sm:items-start">
+        
+                            <h2 class="font-bold text-slate-900 text-xl"> {{ $commentReply->user->username }} </h2>
+        
+                            <span class="text-slate-400"> {{ $commentReply->created_at->diffForHumans() }}</span>
+        
+                        </div>
+        
+                    </div>
+        
+                    <p class="mt-1 font-medium text-slate-800 sm:leading-loose">{{ $commentReply->content }}</p>
+                </div>
+            </div>
+
+            @endforeach
+
+
+        </div>
+
+    </div>
 
     @endforeach
 
 
 </div>
-
-@endauth
 
 <!-- Create Category Modal -->
 <div id="authentication-modal" tabindex="-1" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
@@ -129,5 +214,22 @@
         </div>
     </div>
 </div>
+
+
+@push('script')
+<script>
+
+const showCommentFormButtons = document.querySelectorAll('.show-comment-form');
+    const commentForms = document.querySelectorAll('.comment-form');
+
+    showCommentFormButtons.forEach((button, index) => {
+        button.addEventListener('click', () => {
+            commentForms[index].classList.toggle('hidden');
+        });
+    });
+
+</script>
+@endpush
+
 
 @endsection

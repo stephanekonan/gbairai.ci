@@ -30,12 +30,11 @@ Route::post('/register', [AuthController::class, 'register'])->name('register.st
 Route::post('/', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/post/{id}', [PostController::class, 'show'])->name('post.show');
-Route::get('/posts/{id}', [CommentController::class, 'show'])->name('comment.show');
 
 Route::group(['middleware' => 'auth'], function () {
 
-    Route::post('/posts/comment', [CommentController::class, 'store'])->name('post.comment');
-    Route::post('/comments/reply', [CommentController::class, 'reply'])->name('comments.reply');
+    Route::post('/comment', [CommentController::class, 'store'])->name('post.comment');
+    Route::post('/commentreply/{comment}', [CommentController::class, 'reply'])->name('comment.reply');
 
 });
 

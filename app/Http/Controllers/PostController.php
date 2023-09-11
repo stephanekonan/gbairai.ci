@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use RealRashid\SweetAlert\Facades\Alert;
 
+use Carbon\Carbon;
+
 class PostController extends Controller
 {
     public function store(Request $request) {
@@ -66,6 +68,8 @@ class PostController extends Controller
     }
 
     public function show(Request $request) {
+
+        Carbon::setLocale('fr');
 
         $posts = Post::with('category', 'user')->latest()->get();
 

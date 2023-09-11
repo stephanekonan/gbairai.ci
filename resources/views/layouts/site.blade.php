@@ -34,9 +34,12 @@
 
                         @auth
 
-                            <span  type="button" data-dropdown-toggle="userDropdown" data-dropdown-placement="bottom-end" class="border text-white bg-green-600 hover:bg-white hover:text-black focus:outline-none font-medium rounded-3xl text-md px-4 py-2.5">
-                                <a href="#">Bonjour, {{ Auth::user()->username }}</a>
-                            </span>
+                            <div class="flex items-center space-x-4" type="button" data-dropdown-toggle="userDropdown" data-dropdown-placement="bottom-end">
+                                <span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">En ligne</span>
+
+                                <img src="{{ Gravatar::get(Auth::user()->email) }}" alt="{{ Auth::user()->username }}" class="w-8 h-8 sm:w-10 sm:h-10 object-cover rounded-full">
+
+                            </div>
 
                             @else
 
