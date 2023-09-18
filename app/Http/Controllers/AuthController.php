@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\Register;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
@@ -78,9 +80,16 @@ class AuthController extends Controller
 
         $user->save();
 
+        $contenu = [
+            'body' => $user,
+            'type' => 'Inscription réussie'
+        ];
+
         if($user) {
 
             Auth::login($user);
+
+            Mail::to($user->email)->send(new Register($contenu));
 
             Alert::toast('Inscription effectuée avec succès', 'success')->position('top');
 

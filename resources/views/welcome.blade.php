@@ -23,6 +23,14 @@
     </nav>
 </div>
 
+<div>
+
+    {{$postsCount}}
+    {{$usersCount}}
+    {{$commentsCount}}
+
+</div>
+
 @if ($postsCount > 0)
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-wrap my-10">
 
@@ -51,7 +59,7 @@
 
         @endforeach
 
-        
+
     </div>
 
     @else
