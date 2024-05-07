@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Comment;
 use Illuminate\Http\Request;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class CommentController extends Controller
 {
@@ -11,30 +12,38 @@ class CommentController extends Controller
     {
         $request->validate([
             'content' => 'required',
+            'user_id' => 'required',
+            'post_id' => 'required',
         ]);
 
         Comment::create([
+            'user_id' => $request->input('user_id'),
             'content' => $request->input('content'),
-            'user_id' => auth()->user()->id,
             'post_id' => $request->input('post_id'),
         ]);
 
-        return back();
+        Alert::toast('Commentaire publié', 'success')->position('top');
+
+        return redirect()->back();
     }
 
-    public function reply(Request $request)
+    public function reply(Request $request, Comment $comment)
     {
         $request->validate([
-            'content' => 'required',
+            'contentreply' => 'required',
+            'user_id' => 'required',
+            'post_id' => 'required',
         ]);
 
-        Comment::create([
-            'content' => $request->input('content'),
-            'user_id' => auth()->user()->id,
-            'post_id' => $request->input('post_id'),
-            'parent_comment_id' => $request->input('parent_comment_id'),
-        ]);
+        $commentReply = new Comment();
+        $commentReply->content = $request->input('contentreply');
+        $commentReply->user_id = $request->input('user_id');
+        $commentReply->post_id = $request->input('post_id');
 
-        return back();
+        $comment->replies()->save($commentReply);
+
+        Alert::toast('Commentaire ajouté', 'success')->position('top');
+
+        return redirect()->back();
     }
 }

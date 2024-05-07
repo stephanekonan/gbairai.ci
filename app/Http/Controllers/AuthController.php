@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\Register;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
@@ -27,13 +29,32 @@ class AuthController extends Controller
                 Alert::toast('Vous êtes bien connecté(e)s', 'success')->position('top');
                 return redirect()->route('admin.dashboard');
             } else {
+                
                 Alert::toast('Vous êtes bien connecté(e)s', 'success')->position('top');
-                return redirect()->route('acceuil');
+                return redirect()->back();
             }
 
         } else {
             Alert::toast('Veuillez correctement les champs ', 'error')->position('top');
             return redirect()->back();
+        }
+
+    }
+
+    public function loginInModal(Request $request) {
+
+        $credentials = $request->only('email', 'password');
+
+        $tokenUser = Auth::attempt($credentials);
+
+        if($tokenUser) {
+
+            alert()->success("Connexion réussie", "Bienvenue sur le site")->autoClose(3000);
+            return redirect()->back();
+
+        } else {
+            alert()->success("Connexion échouée", "Veuillez renseigner correctement les champs");
+            return back();
         }
 
     }
@@ -59,9 +80,16 @@ class AuthController extends Controller
 
         $user->save();
 
+        $contenu = [
+            'body' => $user,
+            'type' => 'Inscription réussie'
+        ];
+
         if($user) {
 
             Auth::login($user);
+
+            Mail::to($user->email)->send(new Register($contenu));
 
             Alert::toast('Inscription effectuée avec succès', 'success')->position('top');
 

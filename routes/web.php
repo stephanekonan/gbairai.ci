@@ -23,6 +23,7 @@ Route::get('/', [SiteController::class, 'index'])->name('acceuil');
 
 Route::get('/login', [AuthController::class, 'index'])->name('login.index');
 Route::post('/login', [AuthController::class, 'login'])->name('login.store');
+Route::post('/logininmodal', [AuthController::class, 'loginInModal'])->name('login.in.modal');
 
 Route::get('/register',[AuthController::class, 'registerView'] )->name('register.index');
 Route::post('/register', [AuthController::class, 'register'])->name('register.store');
@@ -32,11 +33,10 @@ Route::get('/post/{id}', [PostController::class, 'show'])->name('post.show');
 
 Route::group(['middleware' => 'auth'], function () {
 
-    Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
-    Route::post('/comments/reply', [CommentController::class, 'reply'])->name('comments.reply');
+    Route::post('/comment', [CommentController::class, 'store'])->name('post.comment');
+    Route::post('/commentreply/{comment}', [CommentController::class, 'reply'])->name('comment.reply');
 
 });
-
 
 Route::group(['middleware' => 'admin'], function () {
 

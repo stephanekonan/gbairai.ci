@@ -179,7 +179,11 @@
                                 <span class="font-normal mx-2">Commentaires</span>
                             </div>
                             <div class="flex items-center justify-center">
-                                <span class="font-extrabold text-4xl text-green-800">159</span>
+                                @if ($commentsCount > 9)
+                                    <span class="font-extrabold text-4xl text-green-800">{{ $commentsCount }}</span>
+                                    @else
+                                    <span class="font-extrabold text-4xl text-green-800">0{{ $commentsCount }}</span>
+                                @endif
                             </div>
                         </div>
                     </div>
